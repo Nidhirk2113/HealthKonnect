@@ -1,98 +1,256 @@
-# Tulasi HealthConnect (v2)
+# Tulasi HealthConnect
 
-Full-stack telepsychiatry & clinic booking platform.
+**A Full-Stack Mental Healthcare Appointment and Consultation Platform**
 
-**Stack:** React 18 + Vite + Tailwind · Node 20 + Express 5 · MongoDB (Mongoose) · Google Sign-In · Razorpay · Jitsi · PDFKit
+Tulasi HealthConnect is a web-based healthcare platform designed to streamline the mental healthcare journey by connecting patients with practitioners through a centralized digital experience. It supports appointment booking, practitioner scheduling, consultation documentation, and prescription management through role-based interfaces.
 
-## What's in v2
+## Overview
 
-| Area | v1 (uploaded) | v2 |
-|---|---|---|
-| Sign-in | Phone OTP stub | **Google Sign-In only** (ID token verified server-side). Doctors/admins are pre-provisioned by email |
-| Booking | Pay-less booking, any start time accepted | Slot must match the doctor's open slots; **10-min payment hold**, atomic double-booking guard (partial unique index), max 3 unpaid holds per patient |
-| Payments | none | **Razorpay (test mode)**: server-created orders, HMAC signature verification, **webhook** for closed-tab safety, **automatic refunds** (full if clinic cancels, or patient cancels ≥ 2h before) and admin retry for failed refunds. Mock mode when no keys are set (dev only) |
-| Video | mock overlay | **Jitsi** room per paid online appointment, embedded in-app; link only released in a window (10 min before → 30 min after) to the two participants |
-| Clinical | none | Doctor **private notes**, diagnosis, medicines, advice, follow-up; **finalize → patient-visible e-prescription → PDF download** |
-| Admin | audit log | Stats, add/hide doctors, edit fees, all appointments, refund retry, audit log |
-| Ops | none | Env validation, rate limits, Helmet, graceful shutdown, tests, CI, Render + Vercel configs |
+The platform provides separate workflows for patients, doctors, and administrators, helping organize the appointment lifecycle from practitioner discovery to post-consultation documentation.
 
-## Run locally
+## Key Features
 
-Prereqs: Node 20+, MongoDB (local or Atlas).
+### Patient Portal
+- Browse and discover available practitioners.
+- View practitioner profiles and available appointment slots.
+- Book appointments and access appointment history.
+- Track appointment and payment status.
+- Access consultation information and finalized prescriptions where authorized.
+
+### Doctor Dashboard
+- View assigned appointments and daily schedules.
+- Manage consultation availability, working hours, and consultation preferences.
+- Access appointments associated with the authenticated practitioner.
+- Record consultation notes and clinical details.
+- Finalize consultations and generate prescription documents.
+
+### Administration
+- Manage practitioner records and account status.
+- View platform statistics and appointment information.
+- Review audit logs and support payment-refund workflows.
+
+### Authentication and Security
+- Google OAuth sign-in.
+- JWT-based authentication.
+- Role-based access control for patients, doctors, and administrators.
+- Server-side validation and protected API endpoints.
+- Appointment and consultation access restrictions for authorized users.
+- Development-only authentication for local demonstrations.
+
+### Consultation and Payments
+- Consultation documentation and finalization workflows.
+- Prescription PDF generation.
+- Configurable payment integration using Razorpay.
+- Payment verification and refund-related workflows.
+
+*Feature availability depends on environment configuration and successful integration setup.*
+
+## Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | React, Vite, Tailwind CSS |
+| Backend | Node.js, Express.js |
+| Database | MongoDB, Mongoose |
+| Authentication | Google OAuth, JWT |
+| Validation | Zod |
+| Payments | Razorpay integration |
+| Document generation | PDF prescription generation |
+| Testing | Node.js test runner and Supertest-based API tests |
+| Deployment | Vercel-compatible frontend and backend deployment configuration |
+
+## Project Structure
+
+```text
+tulasi-healthconnect/
+├── .github/
+│   └── workflows/
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── lib/
+│   │   ├── pages/
+│   │   └── services/
+│   ├── .env.example
+│   ├── package.json
+│   └── vite.config.js
+├── server/
+│   ├── scripts/
+│   │   └── seed.js
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── utils/
+│   ├── test/
+│   ├── .env.example
+│   └── package.json
+├── render.yaml
+├── README.md
+└── .gitignore
+```
+
+## Getting Started
+
+### Prerequisites
+
+Install the following before running the application:
+
+- Node.js and npm
+- MongoDB Atlas account or a compatible MongoDB instance
+- Google OAuth credentials for Google sign-in
+- Git
+
+Optional integrations, such as Razorpay, require their own credentials and configuration.
+
+### 1. Clone the repository
 
 ```bash
-# 1. API
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd tulasi-healthconnect
+```
+
+Replace `YOUR_GITHUB_REPOSITORY_URL` with your repository's actual URL.
+
+### 2. Configure the backend
+
+```bash
 cd server
-cp .env.example .env        # set MONGODB_URI and a 32+ char JWT_SECRET; keep DEV_AUTH=true for local testing
 npm install
-npm run seed                # 3 demo doctors
-npm run dev                 # http://localhost:5000
+```
 
-# 2. Web (new terminal)
+Create a local `.env` file based on `server/.env.example` and configure the required environment variables.
+
+At minimum, configure the MongoDB connection, JWT secret, Google OAuth settings, and any additional variables required by the server configuration.
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+The default local API base URL is:
+
+```text
+http://localhost:5000/api/v1
+```
+
+### 3. Configure the frontend
+
+Open a second terminal:
+
+```bash
 cd client
-cp .env.example .env
 npm install
-npm run dev                 # http://localhost:5173
 ```
 
-With `DEV_AUTH=true` and no Google/Razorpay keys, the sign-in dialog shows a **developer login** (any email; click a seeded doctor like `anita.rao`) and payments run in **mock mode** (a confirm dialog simulates payment). Try the full flow:
+Create a local `.env` file based on `client/.env.example`.
 
-1. Sign in with any email → book a slot for Dr. Anita Rao → confirm the mock payment.
-2. In another browser profile, developer-login as `anita.rao@example.com` → *My practice* → open the consult → write notes → **Finalize & share**.
-   Note: notes open 15 minutes before the slot starts, and the video room opens 10 minutes before. To test now, book the earliest slot available (a slot at least 15 min out is the earliest bookable).
-3. Back as the patient → *My appointments* → download the prescription PDF.
-4. Developer-login with an email listed in `ADMIN_EMAILS` for the admin console.
+Set the API URL:
 
-## Configure real services
-
-### Google Sign-In
-1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → Create credentials → **OAuth client ID** → *Web application*.
-2. Authorized JavaScript origins: `http://localhost:5173` and your Vercel URL. (No redirect URI is needed for the ID-token button.)
-3. Put the client ID in `server/.env` as `GOOGLE_CLIENT_ID`. The frontend reads it from the API (`/config`), so there's nothing to set in the client.
-4. Add your own email to `ADMIN_EMAILS` to become an admin on sign-in.
-
-**Adding doctors:** Admin → Doctors → *Add a doctor* with their Google email. They sign in with that Google account and automatically get the doctor role.
-
-### Razorpay (test mode)
-1. Dashboard → Test mode → API keys → copy `rzp_test_…` key id & secret into `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET`.
-2. Webhooks → add `https://<your-api>/api/v1/payments/razorpay/webhook`, active events `payment.captured` and `order.paid`, and set the same secret as `RAZORPAY_WEBHOOK_SECRET`. (For local testing expose the API with a tunnel such as ngrok.)
-3. Test card: any future expiry/CVV with `4111 1111 1111 1111`; UPI test id `success@razorpay`.
-4. Payments must be auto-captured (the default for test mode); the webhook confirms bookings on capture.
-
-### Jitsi
-Works out of the box with `meet.jit.si`. Room names are random and unguessable, and the link is only returned to the booked patient/doctor during the join window. Caveats: the public server has no lobby/authentication and the public instance may limit embedded sessions (the UI has an **Open in new tab** fallback). For production, self-host Jitsi (or use JaaS) and set `JITSI_DOMAIN`.
-
-## Deploy
-
-**API → Render**: New → Blueprint → select this repo (uses `render.yaml`). Fill the `sync: false` env vars: `MONGODB_URI` (MongoDB Atlas, allow Render's IPs), `CLIENT_ORIGIN` (your Vercel URL), `GOOGLE_CLIENT_ID`, `ADMIN_EMAILS`, and the three Razorpay values. In production the server refuses to start without Google and Razorpay settings, and `DEV_AUTH`/mock payments are impossible.
-
-**Web → Vercel**: Import the repo, set *Root Directory* = `client`, add env `VITE_API_URL=https://<your-render-service>.onrender.com/api/v1`. `vercel.json` handles SPA routing.
-
-Render's free tier sleeps when idle, so the first request after a pause can take ~30s. Hold-expiry also runs on every slot/booking read, so correctness doesn't depend on the background timer being awake.
-
-## Project layout
-```
-server/src
-  config/        env validation (zod), db
-  models/        User, DoctorProfile, Appointment, Consultation, AuditLog
-  controllers/   auth, doctor, appointment, consultation, admin, payment(webhook)
-  services/      bookingService (holds, confirm, refund), paymentService, razorpay, prescriptionPdf, audit
-  utils/         slots (pure, IST), jitsi, errors
-  jobs/          hold sweeper
-server/test      node:test suites (slots, signatures, PDF, API guards)
-client/src       pages/, components/, context/, lib/, services/
+```env
+VITE_API_URL=http://localhost:5000/api/v1
 ```
 
-## API summary (`/api/v1`)
-Public: `GET /config`, `POST /auth/google`, `GET /doctors`, `GET /doctors/:id`, `GET /doctors/:id/slots?date=YYYY-MM-DD`
-Patient: `POST /appointments`, `GET /appointments/mine`, `POST /appointments/:id/payment`, `POST /appointments/:id/payment/verify`
-Doctor: `GET /appointments/doctor?scope=today|upcoming`, `PUT /doctors/me/schedule`, `PUT /consultations/:appointmentId`, `POST /consultations/:appointmentId/finalize`
-Participants: `GET /appointments/:id`, `PATCH /appointments/:id/status`, `GET /consultations/:appointmentId[/prescription.pdf]`
-Admin: `GET /admin/stats|doctors|appointments|audit-logs`, `POST|PATCH /admin/doctors`, `POST /admin/appointments/:id/retry-refund`
-Webhook: `POST /payments/razorpay/webhook`
+Start the frontend:
 
-## Design notes & limits
-- **Privacy:** admins cannot read consultation notes or prescriptions; patients never see private notes; the PDF is served only to the two participants and is not cached.
-- **Prescriptions** are electronic summaries bearing the doctor's registration number. Compliance requirements for e-prescribing (and controlled drugs) vary; have your clinical/legal lead review before going live. This is not a substitute for that review.
-- **Not included (future work):** email/SMS/WhatsApp reminders, GST invoices, patient medical-history profile, multi-clinic support, E2E browser tests.
-- Tests cover slot logic, payment/webhook signatures, PDF generation and API guards. The booking/payment flow against a live MongoDB and live Razorpay/Google was **not** exercised in the build environment (no database or outbound access), so please run the local walkthrough above once before deploying.
+```bash
+npm run dev
+```
+
+Open the local URL printed by Vite, typically:
+
+```text
+http://localhost:5173
+```
+
+### 4. Seed development data
+
+If your local database needs the bundled practitioner demo data, run the seed script from the backend directory:
+
+```bash
+npm run seed
+```
+
+Run this only after configuring the correct database connection. Review the seed script before executing it against any database containing important data.
+
+### 5. Build and test
+
+Build the frontend for production:
+
+```bash
+cd client
+npm run build
+```
+
+Run the backend test suite using the script defined in `server/package.json`:
+
+```bash
+cd server
+npm test
+```
+
+## Environment Configuration
+
+Keep credentials in local environment files or your deployment provider's environment settings.
+
+Common configuration categories include:
+
+- MongoDB connection URI
+- JWT signing secret and expiration
+- Google OAuth client ID
+- Allowed frontend origins for CORS
+- Development authentication toggle
+- Payment provider configuration
+- Clinic or application settings
+
+Refer to `client/.env.example`, `server/.env.example`, and `server/src/config/env.js` for the exact variable names and requirements.
+
+**Security note:** Never commit actual `.env` files, database credentials, JWT secrets, payment secrets, or private keys. Development authentication must remain disabled in production.
+
+## Deployment
+
+The project includes deployment configuration files for hosting.
+
+A typical deployment requires:
+
+1. Deploying the React frontend.
+2. Deploying the Express API with a compatible serverless entry point or hosting configuration.
+3. Configuring MongoDB connectivity and production environment variables.
+4. Setting the frontend API URL to the deployed backend.
+5. Configuring Google OAuth authorized origins and backend CORS.
+6. Verifying authentication, appointment booking, payment handling, and consultation access in the deployed environment.
+
+For Vercel deployments, configure the frontend and backend according to their respective project roots and entry-point requirements. Do not assume local development authentication will work in production.
+
+## Security and Privacy
+
+Tulasi HealthConnect is designed with authentication, role-based authorization, and protected healthcare workflows. Production deployment should also include appropriate access controls, secure secret management, HTTPS, database access restrictions, and privacy safeguards for patient and consultation information.
+
+This repository should not be treated as a certified or compliance-validated clinical system without the necessary independent security, privacy, and regulatory assessments.
+
+## Future Enhancements
+
+Potential areas for further development include:
+
+- Automated appointment reminders.
+- Enhanced practitioner and patient dashboards.
+- Improved consultation follow-up workflows.
+- Expanded reporting and analytics.
+- Additional accessibility and usability improvements.
+
+## Contributing
+
+Contributions, suggestions, and bug reports are welcome. For substantial changes, create a separate branch and test the affected workflows before submitting a pull request.
+
+## License
+
+No license has been specified yet. Add a `LICENSE` file before distributing the project under an open-source license.
+
+---
+
+**Tulasi HealthConnect** — bringing practitioner discovery, appointment management, and consultation workflows into one digital platform.
