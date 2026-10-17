@@ -1,0 +1,42 @@
+# Render Blueprint: deploys the API. The frontend goes on Vercel (see client/vercel.json and README).
+services:
+  - type: web
+    name: tulasi-healthconnect-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI          # MongoDB Atlas connection string
+        sync: false
+      - key: CLIENT_ORIGIN        # e.g. https://tulasi-healthconnect.vercel.app (comma-separate several)
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: JITSI_DOMAIN
+        value: meet.jit.si
+      - key: SLOT_HOLD_MINUTES
+        value: 10
+      - key: REFUND_CUTOFF_HOURS
+        value: 2
+      - key: CLINIC_NAME
+        value: Tulasi Healthcare
+      - key: CLINIC_ADDRESS
+        value: Bengaluru, Karnataka, India
