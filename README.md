@@ -1,4 +1,4 @@
-# Tulasi HealthConnect
+# Tulasi HealthConnect 💚🌱
 
 **A Full-Stack Mental Healthcare Appointment and Consultation Platform**
 
