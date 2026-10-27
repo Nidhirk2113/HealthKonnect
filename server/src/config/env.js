@@ -13,6 +13,8 @@ const schema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
   ADMIN_EMAILS: z.string().default(''),
   DEV_AUTH: bool,
+  // Demo mode explicitly enables simulated payments in production. Never use for real transactions.
+  DEMO_MODE: bool,
   RAZORPAY_KEY_ID: z.string().optional().default(''),
   RAZORPAY_KEY_SECRET: z.string().optional().default(''),
   RAZORPAY_WEBHOOK_SECRET: z.string().optional().default(''),
@@ -33,11 +35,17 @@ const raw = parsed.data;
 const isProd = raw.NODE_ENV === 'production';
 const hasRazorpay = Boolean(raw.RAZORPAY_KEY_ID && raw.RAZORPAY_KEY_SECRET);
 
+// Demo deployments may explicitly use simulated payments. Development authentication
+// remains forbidden in production, even when demo payments are enabled.
 if (isProd) {
   if (!raw.GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID is required in production');
   if (raw.DEV_AUTH) throw new Error('DEV_AUTH must not be enabled in production');
-  if (!hasRazorpay) throw new Error('Razorpay keys are required in production (mock payments are disabled)');
-  if (!raw.RAZORPAY_WEBHOOK_SECRET) throw new Error('RAZORPAY_WEBHOOK_SECRET is required in production');
+  if (!raw.DEMO_MODE && !hasRazorpay) {
+    throw new Error('Razorpay keys are required in production unless DEMO_MODE=true');
+  }
+  if (!raw.DEMO_MODE && !raw.RAZORPAY_WEBHOOK_SECRET) {
+    throw new Error('RAZORPAY_WEBHOOK_SECRET is required in production unless DEMO_MODE=true');
+  }
 }
 
 export const env = {
@@ -45,5 +53,6 @@ export const env = {
   isProd,
   clientOrigins: raw.CLIENT_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean),
   adminEmails: raw.ADMIN_EMAILS.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
-  paymentMode: hasRazorpay ? 'razorpay' : 'mock',
+  // DEMO_MODE always forces mock payments, even if Razorpay keys happen to be present.
+  paymentMode: raw.DEMO_MODE ? 'mock' : hasRazorpay ? 'razorpay' : 'mock',
 };
