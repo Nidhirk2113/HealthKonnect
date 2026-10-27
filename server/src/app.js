@@ -5,13 +5,14 @@ import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import { ZodError } from 'zod';
 import { env } from './config/env.js';
+import { connectDB } from './config/db.js';
 import routes from './routes/index.js';
 import { razorpayWebhook } from './controllers/paymentController.js';
 
 export function createApp() {
   const app = express();
   app.set('trust proxy', 1); // Render / Vercel sit behind a proxy; needed for correct client IPs and rate limiting
-  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } })); // API is consumed from a different origin (Vercel)
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.use(cors({ origin: env.clientOrigins, credentials: false }));
 
   // Webhook needs the raw body for HMAC verification, so it is mounted before express.json().
@@ -39,4 +40,22 @@ export function createApp() {
     res.status(status).json({ message: status >= 500 && env.isProd ? 'Internal server error' : err.message });
   });
   return app;
+}
+
+// Vercel may discover src/app.js as the function entry point. Export a default
+// request handler, connect to MongoDB lazily, and reuse the Express app between invocations.
+const serverlessApp = createApp();
+let dbConnectionPromise;
+
+export default async function handler(req, res) {
+  if (mongoose.connection.readyState !== 1) {
+    if (!dbConnectionPromise) {
+      dbConnectionPromise = connectDB().catch((error) => {
+        dbConnectionPromise = undefined;
+        throw error;
+      });
+    }
+    await dbConnectionPromise;
+  }
+  return serverlessApp(req, res);
 }
