@@ -1,11 +1,11 @@
 import BlogPost from '../models/BlogPost.js';
 
 export const slugify = (text) =>
-  String(text).toLowerCase().normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '')
+  String(text).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'post';
 
 export const readingMinutes = (markdown = '') =>
-  Math.max(1, Math.ceil(markdown.trim().split(/\\s+/).filter(Boolean).length / 200));
+  Math.max(1, Math.ceil(markdown.trim().split(/\s+/).filter(Boolean).length / 200));
 
 /** Returns a slug that is not used by another post (appends -2, -3, ...). */
 export async function uniqueSlug(title, excludeId) {
@@ -18,7 +18,7 @@ export async function uniqueSlug(title, excludeId) {
 /** The ONLY filter public endpoints may use: drafts and future-dated posts never match. */
 export const publicFilter = (extra = {}) => ({ ...extra, status: 'published', publishedAt: { $lte: new Date() } });
 
-export const escapeRegex = (s) => String(s).replace(/[.*+?^${ }\\[\\]\\\\]/g, '\\$&');
+export const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Public shape: the author's email and internal ids are never exposed. */
 export function toPublic(post, { withContent = false } = {}) {
