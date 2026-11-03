@@ -23,13 +23,12 @@ const DOCTORS = [
   { name: 'Ms. Aastha Dwivedi', email: 'aastha.dwivedi@healthkonnect.com', title: 'Consultant Clinical Psychologist (RCI)', qualifications: 'M.Phil Clinical Psychology (RCI Reg)', experienceYears: 8, languages: ['English', 'Hindi'], specialty: ['Interpersonal therapy', 'CBT', 'DBT', 'Behavioral Therapy', 'ERP'], consultationFee: 1500, slotDurationMinutes: 45, consultationModes: ['ONLINE', 'IN_CLINIC'], workingHours: hours([1, 3], '17:00', '20:00'), rating: 4.93, reviewsCount: 128 },
 ];
 
-await mongoose.connect(process.env.MONGODB_URI);
-
 const initialDoctorPassword = process.env.DEMO_DOCTOR_PASSWORD || '';
 if (process.env.DEMO_DOCTOR_AUTH === 'true' && initialDoctorPassword.length < 12) {
   throw new Error('Set DEMO_DOCTOR_PASSWORD (at least 12 characters) before seeding demo doctor accounts.');
 }
 const initialPasswordHash = initialDoctorPassword ? await hashPassword(initialDoctorPassword) : null;
+await mongoose.connect(process.env.MONGODB_URI);
 const legacyEmails = {
   "gorav.gupta@healthkonnect.com": "dr.gorav.gupta@placeholder.tulasihealthcare.test",
   "anu.yadav@healthkonnect.com": "dr.anu.yadav@placeholder.tulasihealthcare.test",
