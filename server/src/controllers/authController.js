@@ -8,6 +8,7 @@ import { signToken } from '../middleware/auth.js';
 import { HttpError } from '../utils/httpError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { audit } from '../services/audit.js';
+import { verifyPassword, hashPassword } from '../utils/password.js';
 
 const googleClient = env.GOOGLE_CLIENT_ID
   ? new OAuth2Client(env.GOOGLE_CLIENT_ID)
@@ -261,6 +262,65 @@ export const config = (_req, res) =>
   res.json({
     googleClientId: env.GOOGLE_CLIENT_ID || null,
     devAuth: env.DEV_AUTH,
+    doctorLoginEnabled: env.DEMO_DOCTOR_AUTH,
     paymentMode: env.paymentMode,
     clinicName: env.CLINIC_NAME,
   });
+
+
+/**
+ * Demo doctor login. It is deliberately limited to pre-provisioned active
+ * doctor accounts with an active DoctorProfile; it never creates/promotes users.
+ */
+export const doctorPasswordLogin = asyncHandler(async (req, res) => {
+  if (!env.DEMO_DOCTOR_AUTH) throw new HttpError(404, 'Doctor password sign-in is unavailable');
+
+  const { email, password } = z.object({
+    email: z.string().trim().email().max(254),
+    password: z.string().min(1).max(200),
+  }).parse(req.body);
+
+  const normalizedEmail = email.toLowerCase();
+  const user = await User.findOne({
+    email: normalizedEmail,
+    role: 'doctor',
+    isActive: true,
+  }).select('+passwordHash');
+
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    throw new HttpError(401, 'Invalid doctor email or password');
+  }
+
+  const profile = await DoctorProfile.findOne({ user: user._id, isActive: true });
+  if (!profile) throw new HttpError(403, 'No active doctor profile is linked to this account');
+
+  user.lastLoginAt = new Date();
+  await user.save();
+  await audit('USER_LOGIN', { user, req, metadata: { method: 'doctor-password' } });
+
+  res.json({ token: signToken(user), user: publicUser(user) });
+});
+
+/** Doctors can change only their own password after verifying the current one. */
+export const changeDoctorPassword = asyncHandler(async (req, res) => {
+  if (req.user.role !== 'doctor') throw new HttpError(403, 'Doctor access required');
+
+  const { currentPassword, newPassword } = z.object({
+    currentPassword: z.string().min(1).max(200),
+    newPassword: z.string().min(12, 'New password must be at least 12 characters').max(200),
+  }).parse(req.body);
+
+  const user = await User.findById(req.user._id).select('+passwordHash');
+  if (!user || !user.isActive) throw new HttpError(401, 'Account not found or disabled');
+  if (!(await verifyPassword(currentPassword, user.passwordHash))) {
+    throw new HttpError( currentPassword === newPassword ? 400 : 401, 'Current password is incorrect');
+  }
+  if (currentPassword === newPassword) {
+    throw new HttpError(400, 'Choose a password different from your current password');
+  }
+
+  user.passwordHash = await hashPassword(newPassword);
+  await user.save();
+  await audit('DOCTOR_PASSWORD_CHANGED', { user, req });
+  res.json({ message: 'Password changed successfully.' });
+});
