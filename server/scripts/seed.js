@@ -50,8 +50,8 @@ try {
   await DoctorProfile.updateMany({ user: { $in: oldDemoUsers.map((u) => u._id) } }, { $set: { isActive: false } });
 
   for (const { name, email, title, ...profile } of DOCTORS) {
-    let user = await User.findOne({ email });
-    if (!user && legacyEmails[email]) user = await User.findOne({ email: legacyEmails[email] });
+    let user = await User.findOne({ email }).select('+passwordHash');
+    if (!user && legacyEmails[email]) user = await User.findOne({ email: legacyEmails[email] }).select('+passwordHash');
     if (user) {
       user.email = email;
       user.name = name;
