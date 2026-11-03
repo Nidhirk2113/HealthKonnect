@@ -312,11 +312,11 @@ export const changeDoctorPassword = asyncHandler(async (req, res) => {
 
   const user = await User.findById(req.user._id).select('+passwordHash');
   if (!user || !user.isActive) throw new HttpError(401, 'Account not found or disabled');
-  if (!(await verifyPassword(currentPassword, user.passwordHash))) {
-    throw new HttpError( currentPassword === newPassword ? 400 : 401, 'Current password is incorrect');
-  }
   if (currentPassword === newPassword) {
     throw new HttpError(400, 'Choose a password different from your current password');
+  }
+  if (!(await verifyPassword(currentPassword, user.passwordHash))) {
+    throw new HttpError(401, 'Current password is incorrect');
   }
 
   user.passwordHash = await hashPassword(newPassword);
