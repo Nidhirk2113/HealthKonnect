@@ -13,6 +13,7 @@ const schema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
   ADMIN_EMAILS: z.string().default(''),
   DEV_AUTH: bool,
+  DEMO_DOCTOR_AUTH: bool,
   // Demo mode explicitly enables simulated payments in production. Never use for real transactions.
   DEMO_MODE: bool,
   RAZORPAY_KEY_ID: z.string().optional().default(''),
