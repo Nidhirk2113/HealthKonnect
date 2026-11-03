@@ -540,6 +540,8 @@ export default function DoctorDashboard() {
       <div className="mt-5">
         {tab === 'schedule' ? (
           <ScheduleEditor />
+        ) : tab === 'security' ? (
+          <DoctorPasswordSettings />
         ) : (
           <AppointmentList key={tab} scope={tab} />
         )}
