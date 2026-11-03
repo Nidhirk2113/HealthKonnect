@@ -14,20 +14,26 @@ const Icon = ({ name, ...p }) => { const C = ICONS[name] || ICONS.Circle; return
 
 function HeroVisual() {
   const [missing, setMissing] = useState(false);
-  // Drop a licensed or clinic-owned photo at client/public/images/hero.jpg to replace the illustration.
+
   return missing ? (
-    <div className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-3xl bg-gradient-to-br from-brand-100 via-brand-50 to-white shadow-soft" aria-hidden="true">
-      <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-brand-500/10" />
-      <div className="absolute -bottom-12 -left-8 h-56 w-56 rounded-full bg-brand-500/10" />
-      <ICONS.HeartPulse size={96} className="text-brand-600" strokeWidth={1.25} />
+    <div className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-3xl bg-gradient-to-br from-brand-100 via-brand-50 to-white shadow-soft">
+      <div className="absolute right-10 top-10 h-48 w-48 rounded-full bg-brand-500/10" />
+      <div className="absolute bottom-12 left-8 h-56 w-56 rounded-full bg-brand-500/10" />
+      <Icons.HeartPulse
+        size={96}
+        className="text-brand-600"
+        strokeWidth={1.25}
+      />
     </div>
   ) : (
-    <img
-  src="/images/hero.jpg"
-  alt="Tulasi Healthcare — Mental Health and Well-being"
-  onError={() => setMissing(true)}
-  className="aspect-[4/3] w-full rounded-3xl object-contain bg-white shadow-soft"
-/>
+    <div className="grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-3xl bg-white shadow-soft">
+      <img
+        src="/images/hero.jpg"
+        alt="Tulasi Healthcare — Mental Health and Well-being"
+        onError={() => setMissing(true)}
+        className="h-[82%] w-[82%] object-contain"
+      />
+    </div>
   );
 }
 
