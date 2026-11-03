@@ -19,6 +19,8 @@ const adminOnly = [needAuth, requireRole('admin')];
 // Public
 router.get('/config', auth.config);
 router.post('/auth/google', authLimiter, auth.googleLogin);
+router.post('/auth/doctor-login', authLimiter, auth.doctorPasswordLogin);
+router.post('/auth/doctor/change-password', ...doctor, authLimiter, auth.changeDoctorPassword);
 
 if (env.DEV_AUTH && !env.isProd) {
   router.post('/auth/dev-login', authLimiter, auth.devLogin);

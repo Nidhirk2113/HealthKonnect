@@ -15,6 +15,7 @@ import {
 import { api } from '../services/api.js';
 import { DAYS, fmtDateTime, fmtTime, modeLabel } from '../lib/format.js';
 import StatusBadge from '../components/StatusBadge.jsx';
+import DoctorPasswordSettings from '../components/DoctorPasswordSettings.jsx';
 import {
   Empty,
   ErrorNotice,
@@ -459,6 +460,7 @@ export default function DoctorDashboard() {
     { id: 'today', label: 'Today', icon: CalendarDays },
     { id: 'upcoming', label: 'Upcoming', icon: CalendarClock },
     { id: 'schedule', label: 'Schedule & profile', icon: Settings2 },
+    { id: 'security', label: 'Account security', icon: Settings2 },
   ];
 
   const todayLabel = new Intl.DateTimeFormat('en-IN', {
@@ -509,7 +511,7 @@ export default function DoctorDashboard() {
           </p>
         </div>
 
-        {tab !== 'schedule' && (
+        {!['schedule', 'security'].includes(tab) && (
           <Link to="/" className="btn-secondary self-start sm:self-auto">
             View patient portal
             <ArrowUpRight size={16} />
@@ -538,6 +540,8 @@ export default function DoctorDashboard() {
       <div className="mt-5">
         {tab === 'schedule' ? (
           <ScheduleEditor />
+        ) : tab === 'security' ? (
+          <DoctorPasswordSettings />
         ) : (
           <AppointmentList key={tab} scope={tab} />
         )}
