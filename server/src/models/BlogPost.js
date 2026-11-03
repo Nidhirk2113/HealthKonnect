@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
     content: { type: String, required: true, maxlength: 60000 }, // Markdown
     coverImage: { type: String, trim: true, maxlength: 600, default: '' }, // URL only, never binary data
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    authorDisplayName: { type: String, trim: true, maxlength: 120, default: '' },
     category: { type: String, required: true, enum: CATEGORY_SLUGS, index: true }, // BlogCategory slug
     tags: { type: [{ type: String, trim: true, lowercase: true, maxlength: 40 }], default: [] },
     status: { type: String, enum: ['draft', 'published'], default: 'draft' },

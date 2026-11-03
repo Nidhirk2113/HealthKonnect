@@ -27,7 +27,7 @@ export function toPublic(post, { withContent = false } = {}) {
     id: String(o._id), title: o.title, slug: o.slug, excerpt: o.excerpt, coverImage: o.coverImage,
     category: o.category, tags: o.tags, publishedAt: o.publishedAt, readingMinutes: o.readingMinutes,
     seoTitle: o.seoTitle, seoDescription: o.seoDescription,
-    author: o.author ? { name: o.author.name, picture: o.author.picture } : null,
+    author: o.author ? { name: o.authorDisplayName || o.author.name, picture: o.author.picture } : null,
     ...(withContent && { content: o.content }),
   };
 }

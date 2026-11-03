@@ -11,7 +11,8 @@
     "start": "node src/index.js",
     "seed": "node scripts/seed.js",
     "seed:blog-categories": "node scripts/seed-blog-categories.js",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "seed:blog-posts": "node scripts/seed-blog-posts.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
