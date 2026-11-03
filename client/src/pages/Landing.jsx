@@ -22,7 +22,12 @@ function HeroVisual() {
       <ICONS.HeartPulse size={96} className="text-brand-600" strokeWidth={1.25} />
     </div>
   ) : (
-    <img src="/images/hero.jpg" alt="A calm consultation room at Tulasi Healthcare" onError={() => setMissing(true)} className="aspect-[4/3] w-full rounded-3xl object-cover shadow-soft" />
+    <img
+  src="/images/hero.jpg"
+  alt="Tulasi Healthcare — Mental Health and Well-being"
+  onError={() => setMissing(true)}
+  className="aspect-[4/3] w-full rounded-3xl object-contain bg-white shadow-soft"
+/>
   );
 }
 
