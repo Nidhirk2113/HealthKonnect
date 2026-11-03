@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { fmtDateTime, rupees } from '../lib/format.js';
 import StatusBadge from '../components/StatusBadge.jsx';
+import BlogManager from '../components/admin/BlogManager.jsx';
+import Enquiries from '../components/admin/Enquiries.jsx';
 import { Empty, ErrorNotice, Spinner, SuccessNotice } from '../components/Notice.jsx';
 
 const SPECIALTIES = ['Addiction', 'Anxiety', 'OCD', 'Personality Disorders', 'Bipolar', 'Schizoaffective Disorders', 'Psychosexual Disorder', 'Psychotic Disorders', 'Anxiety & OCD', 'Phobias', 'Sexual Dysfunction', 'Dual Diagnosis', 'Panic Disorder', 'Geriatric Psychiatry', 'Bipolar Disorder', 'Schizophrenia', 'Depression', 'Female Sexual Disorder', 'Psychosis', 'Dementia', 'Mood disorders', 'CBT', 'DBT', 'ACT', 'ERP', 'Family therapy', 'Marital therapy', 'Mindfulness based therapy', 'Interpersonal therapy', 'Behavioral Therapy'];
@@ -173,12 +175,12 @@ function Audit() {
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState('overview');
-  const views = { overview: <Overview />, doctors: <Doctors />, appointments: <Appointments />, audit: <Audit /> };
+  const views = { overview: <Overview />, doctors: <Doctors />, appointments: <Appointments />, audit: <Audit />, blogs: <BlogManager />, enquiries: <Enquiries /> };
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="text-3xl font-bold">Admin</h1>
       <div className="mt-5 flex flex-wrap gap-2">
-        {[['overview', 'Overview'], ['doctors', 'Doctors'], ['appointments', 'Appointments'], ['audit', 'Audit log']].map(([k, label]) => (
+        {[['overview', 'Overview'], ['doctors', 'Doctors'], ['appointments', 'Appointments'], ['audit', 'Audit log'], ['blogs', 'Blog management'], ['enquiries', 'Enquiries']].map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)} className={`rounded-full px-4 py-1.5 text-sm font-medium ${tab === k ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}>{label}</button>
         ))}
       </div>

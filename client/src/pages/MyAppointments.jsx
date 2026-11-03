@@ -70,7 +70,7 @@ export default function MyAppointments() {
       <div className="mt-4 space-y-3"><ErrorNotice>{msg.error}</ErrorNotice><SuccessNotice>{msg.ok}</SuccessNotice></div>
 
       <div className="mt-4 space-y-3">
-        {list.length === 0 ? <Empty>{tab === 'upcoming' ? <>Nothing booked yet. <Link className="font-semibold text-brand-700" to="/">Find a doctor</Link></> : 'No past appointments.'}</Empty> : list.map((a) => (
+        {list.length === 0 ? <Empty>{tab === 'upcoming' ? <>Nothing booked yet. <Link className="font-semibold text-brand-700" to="/doctors">Find a doctor</Link></> : 'No past appointments.'}</Empty> : list.map((a) => (
           <article key={a._id} className="panel flex flex-wrap items-center justify-between gap-4 p-4">
             <div className="flex items-center gap-3">
               <Avatar name={a.doctor.name} src={a.doctor.picture} />
