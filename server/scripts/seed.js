@@ -5,8 +5,8 @@ import DoctorProfile from '../src/models/DoctorProfile.js';
 import { hashPassword } from '../src/utils/password.js';
 
 // Reference roster supplied from the Tulasi Healthcare Bengaluru website HTML.
-// Emails are intentionally non-deliverable placeholders for local/demo use only.
-// Replace them with verified addresses before enabling real Google OAuth claims.
+// Demo login aliases use the HealthConnect domain; they are not mailboxes.
+// Replace with verified clinic-managed addresses before enabling real account claims.
 const hours = (days, startTime, endTime) => days.map((dayOfWeek) => ({ dayOfWeek, startTime, endTime }));
 const MON_SAT = [1, 2, 3, 4, 5, 6];
 const DOCTORS = [
