@@ -42,6 +42,7 @@ const hasRazorpay = Boolean(raw.RAZORPAY_KEY_ID && raw.RAZORPAY_KEY_SECRET);
 if (isProd) {
   if (!raw.GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID is required in production');
   if (raw.DEV_AUTH) throw new Error('DEV_AUTH must not be enabled in production');
+  if (raw.DEMO_DOCTOR_AUTH && !raw.DEMO_MODE) throw new Error('DEMO_DOCTOR_AUTH requires DEMO_MODE=true; shared doctor credentials are demo-only');
   if (raw.DEMO_DOCTOR_AUTH && raw.DEMO_DOCTOR_PASSWORD.length < 12) throw new Error('DEMO_DOCTOR_PASSWORD must be set to at least 12 characters when DEMO_DOCTOR_AUTH=true');
   if (!raw.DEMO_MODE && !hasRazorpay) {
     throw new Error('Razorpay keys are required in production unless DEMO_MODE=true');
