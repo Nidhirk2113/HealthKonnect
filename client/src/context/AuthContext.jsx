@@ -6,7 +6,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [config, setConfig] = useState({ googleClientId: null, devAuth: false, paymentMode: 'mock' });
+  const [config, setConfig] = useState({ googleClientId: null, devAuth: false, doctorLoginEnabled: false, paymentMode: 'mock' });
   const [loading, setLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
 
