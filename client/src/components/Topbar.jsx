@@ -4,10 +4,11 @@ import { useAuth } from '../context/AuthContext.jsx';
 import Avatar from './Avatar.jsx';
 
 const NAV = {
-  patient: [['/', 'Find a doctor'], ['/appointments', 'My appointments']],
+  patient: [['/doctors', 'Find a doctor'], ['/appointments', 'My appointments'], ['/blogs', 'Blogs']],
   doctor: [['/doctor', 'My schedule']],
   admin: [['/admin', 'Admin']],
 };
+const PUBLIC = [['/', 'Home'], ['/about', 'About'], ['/services', 'Services'], ['/doctors', 'Doctors'], ['/blogs', 'Blogs'], ['/contact', 'Contact']];
 
 export default function Topbar() {
   const { user, signOut, openAuth } = useAuth();
@@ -20,9 +21,9 @@ export default function Topbar() {
         <Link to="/" className="flex items-center gap-2 font-extrabold text-brand-700">
           <HeartPulse size={22} /> Tulasi HealthConnect
         </Link>
-        <nav className="hidden items-center gap-1 sm:flex">
-          {(user ? NAV[user.role] : [['/', 'Find a doctor']]).map(([to, label]) => (
-            <NavLink key={to} to={to} end className={link}>{label}</NavLink>
+        <nav className={`hidden items-center gap-1 ${user ? 'sm:flex' : 'lg:flex'}`}>
+          {(user ? NAV[user.role] : PUBLIC).map(([to, label]) => (
+            <NavLink key={to} to={to} end={to === '/'} className={link}>{label}</NavLink>
           ))}
         </nav>
         {user ? (
@@ -38,11 +39,9 @@ export default function Topbar() {
           <button className="btn btn-sm" onClick={openAuth}>Sign in</button>
         )}
       </div>
-      {user && (
-        <nav className="flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-1.5 sm:hidden">
-          {NAV[user.role].map(([to, label]) => <NavLink key={to} to={to} end className={link}>{label}</NavLink>)}
-        </nav>
-      )}
+      <nav className={`flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-1.5 ${user ? 'sm:hidden' : 'lg:hidden'}`}>
+        {(user ? NAV[user.role] : PUBLIC).map(([to, label]) => <NavLink key={to} to={to} end={to === '/'} className={link}>{label}</NavLink>)}
+      </nav>
     </header>
   );
 }

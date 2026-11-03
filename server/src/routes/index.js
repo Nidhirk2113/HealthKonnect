@@ -7,6 +7,7 @@ import * as doctors from '../controllers/doctorController.js';
 import * as appts from '../controllers/appointmentController.js';
 import * as consult from '../controllers/consultationController.js';
 import * as admin from '../controllers/adminController.js';
+import contentRoutes from './content.js';
 
 const router = Router();
 const authLimiter = rateLimit({ windowMs: 15 * 60000, limit: 30, standardHeaders: true, legacyHeaders: false, message: { message: 'Too many attempts. Please try again later.' } });
@@ -60,5 +61,8 @@ router.patch('/admin/doctors/:id', ...adminOnly, admin.updateDoctor);
 router.get('/admin/appointments', ...adminOnly, admin.listAppointments);
 router.post('/admin/appointments/:id/retry-refund', ...adminOnly, admin.retryRefund);
 router.get('/admin/audit-logs', ...adminOnly, admin.auditLogs);
+
+// Landing-page content: blogs, categories, contact form, blog image uploads
+router.use(contentRoutes);
 
 export default router;

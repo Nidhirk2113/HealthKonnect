@@ -1,9 +1,11 @@
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import { ZodError } from 'zod';
+
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import routes from './routes/index.js';
@@ -11,40 +13,133 @@ import { razorpayWebhook } from './controllers/paymentController.js';
 
 export function createApp() {
   const app = express();
-  app.set('trust proxy', 1); // Render / Vercel sit behind a proxy; needed for correct client IPs and rate limiting
-  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-  app.use(cors({ origin: env.clientOrigins, credentials: false }));
 
-  // Webhook needs the raw body for HMAC verification, so it is mounted before express.json().
-  app.post('/api/v1/payments/razorpay/webhook', express.raw({ type: 'application/json', limit: '1mb' }), razorpayWebhook);
+  // Trust the reverse proxy for client IP detection and rate limiting.
+  app.set('trust proxy', 1);
 
-  app.use(express.json({ limit: '100kb' }));
-  app.use('/api/v1', rateLimit({ windowMs: 15 * 60000, limit: 600, standardHeaders: true, legacyHeaders: false }));
+  // Security headers.
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: {
+        policy: 'cross-origin',
+      },
+    })
+  );
 
+  // CORS configuration.
+  app.use(
+    cors({
+      origin: env.clientOrigins,
+      credentials: false,
+    })
+  );
+
+  // Razorpay webhook must receive the raw request body for HMAC verification.
+  // This middleware must remain before express.json().
+  app.post(
+    '/api/v1/payments/razorpay/webhook',
+    express.raw({
+      type: 'application/json',
+      limit: '1mb',
+    }),
+    razorpayWebhook
+  );
+
+  // Parse JSON request bodies.
+  app.use(
+    express.json({
+      limit: '100kb',
+    })
+  );
+
+  // Global API rate limiting.
+  app.use(
+    '/api/v1',
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 600,
+      standardHeaders: true,
+      legacyHeaders: false,
+    })
+  );
+
+  // Health-check endpoint.
   app.get('/health', (_req, res) => {
     const up = mongoose.connection.readyState === 1;
-    res.status(up ? 200 : 503).json({ status: up ? 'ok' : 'degraded', db: up });
+
+    return res.status(up ? 200 : 503).json({
+      status: up ? 'ok' : 'degraded',
+      db: up,
+    });
   });
+
+  // API routes.
   app.use('/api/v1', routes);
 
-  app.use((_req, res) => res.status(404).json({ message: 'Route not found' }));
+  // JSON 404 handler.
+  app.use((_req, res) => {
+    return res.status(404).json({
+      message: 'Route not found',
+    });
+  });
+
+  // Centralized error handler.
   // eslint-disable-next-line no-unused-vars
   app.use((err, _req, res, _next) => {
+    // Zod validation errors.
     if (err instanceof ZodError) {
-      return res.status(400).json({ message: err.issues[0]?.message || 'Invalid input', issues: err.issues.map((i) => ({ path: i.path.join('.'), message: i.message })) });
+      return res.status(400).json({
+        message: err.issues[0]?.message || 'Invalid input',
+        issues: err.issues.map((issue) => ({
+          path: issue.path.join('.'),
+          message: issue.message,
+        })),
+      });
     }
-    if (err.name === 'CastError') return res.status(400).json({ message: 'Invalid identifier' });
-    if (err.name === 'ValidationError') return res.status(400).json({ message: err.message });
+
+    // Invalid MongoDB ObjectId or casting errors.
+    if (err.name === 'CastError') {
+      return res.status(400).json({
+        message: 'Invalid identifier',
+      });
+    }
+
+    // Mongoose schema validation errors.
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+
+    // MongoDB duplicate-key errors.
+    if (err.code === 11000) {
+      return res.status(409).json({
+        message: 'A record with this value already exists',
+      });
+    }
+
+    // Other application or server errors.
     const status = err.status || 500;
-    if (status >= 500) console.error(err);
-    res.status(status).json({ message: status >= 500 && env.isProd ? 'Internal server error' : err.message });
+
+    if (status >= 500) {
+      console.error(err);
+    }
+
+    return res.status(status).json({
+      message:
+        status >= 500 && env.isProd
+          ? 'Internal server error'
+          : err.message,
+    });
   });
+
   return app;
 }
 
-// Vercel may discover src/app.js as the function entry point. Export a default
-// request handler, connect to MongoDB lazily, and reuse the Express app between invocations.
+// Vercel serverless handler.
+// Connect to MongoDB lazily and reuse the Express app between invocations.
 const serverlessApp = createApp();
+
 let dbConnectionPromise;
 
 export default async function handler(req, res) {
@@ -55,7 +150,9 @@ export default async function handler(req, res) {
         throw error;
       });
     }
+
     await dbConnectionPromise;
   }
+
   return serverlessApp(req, res);
 }

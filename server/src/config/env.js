@@ -25,6 +25,10 @@ const schema = z.object({
   JITSI_DOMAIN: z.string().default('meet.jit.si'),
   CLINIC_NAME: z.string().default('Tulasi Healthcare'),
   CLINIC_ADDRESS: z.string().default('Bengaluru, Karnataka, India'),
+  // Optional: blog image uploads (Cloudinary). Without them, admins paste image URLs instead.
+  CLOUDINARY_CLOUD_NAME: z.string().optional().default(''),
+  CLOUDINARY_API_KEY: z.string().optional().default(''),
+  CLOUDINARY_API_SECRET: z.string().optional().default(''),
 });
 
 const parsed = schema.safeParse(process.env);

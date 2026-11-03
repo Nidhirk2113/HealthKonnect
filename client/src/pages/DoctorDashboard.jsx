@@ -512,7 +512,7 @@ export default function DoctorDashboard() {
         </div>
 
         {!['schedule', 'security'].includes(tab) && (
-          <Link to="/" className="btn-secondary self-start sm:self-auto">
+          <Link to="/doctors" className="btn-secondary self-start sm:self-auto">
             View patient portal
             <ArrowUpRight size={16} />
           </Link>

@@ -184,7 +184,9 @@ export const updateStatus = asyncHandler(async (req, res) => {
     return res.json({ appointment: clientView(appt), refunded: appt.payment.status === 'REFUNDED' });
   }
 
-  if (!isDoctor) throw new HttpError(403, 'Only the treating doctor can do this');
+  if (role !== 'doctor' || !isDoctor) {
+  throw new HttpError(403, 'Only the treating doctor can do this');
+}
   if (appt.status !== 'BOOKED') throw new HttpError(409, 'Only booked appointments can be updated');
   if (appt.slotStart > new Date()) throw new HttpError(409, 'This appointment has not started yet');
   appt.status = status;

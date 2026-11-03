@@ -10,12 +10,35 @@ import { audit } from '../services/audit.js';
 const POPULATE = { path: 'user', select: 'name email picture' };
 const MAX_DAYS_AHEAD = 60;
 
+
 export const listDoctors = asyncHandler(async (req, res) => {
   const q = { isActive: true };
-  if (req.query.specialty) q.specialty = String(req.query.specialty);
-  if (req.query.mode) q.consultationModes = String(req.query.mode);
-  const doctors = await DoctorProfile.find(q).populate(POPULATE).sort({ consultationFee: 1 });
-  res.json({ doctors: doctors.filter((d) => d.user) });
+
+  // Validate specialty filter.
+  if (req.query.specialty) {
+    q.specialty = String(req.query.specialty).trim();
+  }
+
+  // Validate consultation mode.
+  if (req.query.mode) {
+    const mode = z
+      .enum(['ONLINE', 'IN_CLINIC'])
+      .safeParse(req.query.mode);
+
+    if (!mode.success) {
+      throw new HttpError(400, 'Invalid consultation mode');
+    }
+
+    q.consultationModes = mode.data;
+  }
+
+  const doctors = await DoctorProfile.find(q)
+    .populate(POPULATE)
+    .sort({ consultationFee: 1 });
+
+  res.json({
+    doctors: doctors.filter((d) => d.user),
+  });
 });
 
 export const getDoctor = asyncHandler(async (req, res) => {

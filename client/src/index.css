@@ -22,3 +22,21 @@ button, input, select, textarea { font: inherit; }
   .label { @apply mb-1 block text-sm font-medium text-slate-600; }
   .eyebrow { @apply text-xs font-bold uppercase tracking-[.16em] text-brand-600; }
 }
+
+/* ---- Public site additions (landing page and blog) ---- */
+.prose-blog { color: #3b4a43; font-size: 1.0625rem; line-height: 1.85; }
+.prose-blog h2 { margin: 2.25rem 0 .75rem; font-size: 1.6rem; font-weight: 800; color: #20332b; scroll-margin-top: 5rem; }
+.prose-blog h3 { margin: 1.75rem 0 .5rem; font-size: 1.25rem; font-weight: 700; color: #20332b; scroll-margin-top: 5rem; }
+.prose-blog p, .prose-blog ul, .prose-blog ol, .prose-blog blockquote, .prose-blog pre, .prose-blog table { margin: 1rem 0; }
+.prose-blog ul { list-style: disc; padding-left: 1.5rem; }
+.prose-blog ol { list-style: decimal; padding-left: 1.5rem; }
+.prose-blog a { color: #17623f; font-weight: 600; text-decoration: underline; }
+.prose-blog blockquote { border-left: 4px solid #279461; background: #effaf4; padding: .5rem 1rem; border-radius: 0 .75rem .75rem 0; }
+.prose-blog img { margin: 1.5rem 0; border-radius: 1rem; max-width: 100%; height: auto; }
+.prose-blog code { background: #f1f5f3; padding: .1rem .35rem; border-radius: .35rem; font-size: .9em; }
+.prose-blog pre { background: #f1f5f3; padding: 1rem; border-radius: .75rem; overflow-x: auto; }
+.prose-blog table { border-collapse: collapse; display: block; overflow-x: auto; }
+.prose-blog th, .prose-blog td { border: 1px solid #e2e8f0; padding: .4rem .75rem; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.fade-up { animation: fadeUp .6s ease both; }
+@media (prefers-reduced-motion: reduce) { .fade-up { animation: none; } }
