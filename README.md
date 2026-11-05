@@ -1,8 +1,10 @@
-# Tulasi HealthConnect 💚
+# HealthKonnect 💚
 
-**A full-stack mental healthcare, appointment booking and clinic content platform for Tulasi Healthcare, Bengaluru.**
+**A full-stack mental healthcare, appointment booking and clinic content platform for Tulasi Healthcare.**
 
-Tulasi HealthConnect brings patient-facing clinic information and appointment journeys together with dedicated doctor and administrator workflows. Patients can discover practitioners, review availability, book consultations and access authorised consultation information. Doctors manage schedules and consultations, while administrators oversee clinic operations and publish educational blog content.
+HealthKonnect brings patient-facing clinic information and appointment journeys together with dedicated doctor and administrator workflows. Patients can discover practitioners, review availability, book consultations and access authorised consultation information. Doctors manage schedules and consultations, while administrators oversee clinic operations and publish educational blog content.
+
+Tulasi Healthcare is headquartered in Delhi–Gurgaon, with its technology, business development and marketing teams operating from Bengaluru, Karnataka. The product name uses a "K" (HealthKonnect) as the platform's brand for this organisation.
 
 > **Project status:** Deployed web application with patient, doctor and administrator experiences, appointment and consultation workflows, and a public blog. Payment behaviour depends on the configured environment (Razorpay or explicitly enabled demo/mock mode).
 
@@ -572,4 +574,4 @@ No open-source license is currently specified in this repository. Unless a licen
 
 ---
 
-**Tulasi HealthConnect** — connecting clinic discovery, appointments, consultations and mental-health resources in one digital experience.
+**HealthKonnect** — connecting clinic discovery, appointments, consultations and mental-health resources in one digital experience.
