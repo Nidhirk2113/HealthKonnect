@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import Avatar from './Avatar.jsx';
 
 const NAV = {
-  patient: [['/doctors', 'Find a doctor'], ['/appointments', 'My appointments'], ['/blogs', 'Blogs']],
+  patient: [['/doctors', 'Find a doctor'], ['/appointments', 'My appointments'], ['/pause', 'Check-in'], ['/blogs', 'Blogs']],
   doctor: [['/doctor', 'My schedule']],
   admin: [['/admin', 'Admin']],
 };
