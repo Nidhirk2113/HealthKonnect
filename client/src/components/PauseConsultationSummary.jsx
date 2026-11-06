@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { HeartPulse, LockKeyhole } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { HeartPulse, LockKeyhole, RefreshCw } from 'lucide-react';
 import { api } from '../services/api.js';
 import { ErrorNotice } from './Notice.jsx';
 
@@ -9,16 +9,28 @@ const frequency = ['Not at all', 'Several days', 'More than half the days', 'Nea
 export default function PauseConsultationSummary({ appointmentId }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
-  useEffect(() => {
-    let alive = true;
-    api.get(`/consultations/${appointmentId}/wellbeing`)
-      .then(r => { if (alive) setData(r); })
-      .catch(e => { if (alive) setError(e.message); });
-    return () => { alive = false; };
+  const [refreshing, setRefreshing] = useState(false);
+  const load = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const result = await api.get(`/consultations/${appointmentId}/wellbeing`);
+      setData(result);
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setRefreshing(false);
+    }
   }, [appointmentId]);
 
+  useEffect(() => {
+    load();
+    const timer = setInterval(load, 15000);
+    return () => clearInterval(timer);
+  }, [load]);
+
   return <section className="panel p-5 lg:col-span-2">
-    <div className="flex items-center gap-2"><HeartPulse className="text-emerald-700"/><h2 className="text-lg font-bold">Pause · Patient well-being</h2></div>
+    <div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2"><HeartPulse className="text-emerald-700"/><h2 className="text-lg font-bold">Pause · Patient well-being</h2></div><button type="button" className="btn-secondary btn-sm" onClick={load} disabled={refreshing}><RefreshCw size={14} className={refreshing ? 'animate-spin' : ''}/> Refresh</button></div>
     {error && <ErrorNotice>{error}</ErrorNotice>}
     {!data && !error && <p className="mt-3 text-sm text-slate-500">Loading shared information…</p>}
     {data && !data.shared && <div className="mt-3 flex items-start gap-2 text-sm text-slate-500"><LockKeyhole size={17}/>The patient has not enabled Pause sharing for this consultation.</div>}
