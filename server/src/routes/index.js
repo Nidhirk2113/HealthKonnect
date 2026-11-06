@@ -8,6 +8,7 @@ import * as appts from '../controllers/appointmentController.js';
 import * as consult from '../controllers/consultationController.js';
 import * as admin from '../controllers/adminController.js';
 import contentRoutes from './content.js';
+import * as wellbeing from '../controllers/wellbeingController.js';
 
 const router = Router();
 const authLimiter = rateLimit({ windowMs: 15 * 60000, limit: 30, standardHeaders: true, legacyHeaders: false, message: { message: 'Too many attempts. Please try again later.' } });
@@ -52,6 +53,14 @@ router.get('/consultations/:appointmentId', needAuth, consult.getConsultation);
 router.put('/consultations/:appointmentId', ...doctor, consult.saveConsultation);
 router.post('/consultations/:appointmentId/finalize', ...doctor, consult.finalizeConsultation);
 router.get('/consultations/:appointmentId/prescription.pdf', needAuth, consult.prescriptionPdf);
+
+// Pause well-being: patient-owned data and appointment-scoped clinician access
+router.post('/wellbeing/check-ins', ...patient, wellbeing.createCheckIn);
+router.get('/wellbeing/me', ...patient, wellbeing.patientOverview);
+router.post('/wellbeing/assessments', ...patient, wellbeing.saveAssessment);
+router.put('/wellbeing/sharing', ...patient, wellbeing.setSharing);
+router.delete('/wellbeing/sharing/:permissionId', ...patient, wellbeing.revokeSharing);
+router.get('/consultations/:appointmentId/wellbeing', ...doctor, wellbeing.consultationSummary);
 
 // Admin
 router.get('/admin/stats', ...adminOnly, admin.stats);

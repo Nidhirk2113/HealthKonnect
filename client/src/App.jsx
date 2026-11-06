@@ -4,6 +4,7 @@ import AuthModal from './components/AuthModal.jsx';
 import RequireRole from './components/RequireRole.jsx';
 import Home from './pages/Home.jsx';
 import MyAppointments from './pages/MyAppointments.jsx';
+import Pause from './pages/Pause.jsx';
 import DoctorDashboard from './pages/DoctorDashboard.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import ConsultRoom from './pages/ConsultRoom.jsx';
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/blogs/:slug" element={<BlogPost />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/pause" element={<RequireRole roles={["patient"]}><Pause /></RequireRole>} />
         <Route path="/appointments" element={<RequireRole roles={['patient']}><MyAppointments /></RequireRole>} />
         <Route path="/doctor" element={<RequireRole roles={['doctor']}><DoctorDashboard /></RequireRole>} />
         <Route path="/admin" element={<RequireRole roles={['admin']}><AdminDashboard /></RequireRole>} />

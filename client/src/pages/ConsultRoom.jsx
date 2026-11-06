@@ -5,6 +5,7 @@ import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { fmtDateTime, fmtTime, modeLabel } from '../lib/format.js';
 import ConsultationEditor, { PrescriptionSummary } from '../components/ConsultationEditor.jsx';
+import PauseConsultationSummary from '../components/PauseConsultationSummary.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
 import { ErrorNotice, Spinner } from '../components/Notice.jsx';
 
@@ -79,6 +80,7 @@ export default function ConsultRoom() {
             {['BOOKED', 'COMPLETED'].includes(a.status) ? <ConsultationEditor appointmentId={a._id} onFinalized={load} /> : <p className="text-sm text-slate-500">Notes are available for booked or completed appointments.</p>}
           </aside>
         )}
+        {viewerRole === 'doctor' && a.status === 'BOOKED' && Date.now() >= new Date(a.slotStart).getTime() && Date.now() <= new Date(a.slotEnd).getTime() && <PauseConsultationSummary appointmentId={a._id} />}
         {rx && <aside className="panel p-5"><PrescriptionSummary c={rx} appointmentId={a._id} /></aside>}
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CreditCard, Download, Video, XCircle } from 'lucide-react';
+import { CreditCard, Download, Video, XCircle, HeartPulse } from 'lucide-react';
 import { api, downloadPrescription } from '../services/api.js';
 import { collectPayment, PaymentDismissed } from '../lib/payment.js';
 import { fmtDateTime, modeLabel, rupees } from '../lib/format.js';
@@ -62,6 +62,7 @@ export default function MyAppointments() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="text-3xl font-bold">My appointments</h1>
+      <div className="mt-4"><Link to="/pause" className="btn-secondary"><HeartPulse size={16}/> Open Pause · Well-being</Link></div>
       <div className="mt-5 flex gap-2">
         {[['upcoming', `Upcoming (${upcoming.length})`], ['past', `Past (${past.length})`]].map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)} className={`rounded-full px-4 py-1.5 text-sm font-medium ${tab === k ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200'}`}>{label}</button>
