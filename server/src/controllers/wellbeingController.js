@@ -51,7 +51,7 @@ export const setSharing = asyncHandler(async (req, res) => {
   if (!appt) throw new HttpError(404, 'No active booked appointment is available for sharing');
   const permission = await WellbeingSharePermission.findOneAndUpdate(
     { patient: req.user._id, appointment: appt._id },
-    { $set: { doctor: appt.doctor, ...data, revokedAt: null, grantedAt: new Date(), shareJournalNotes: false } },
+    { $set: { doctor: appt.doctor, appointment: appt._id, shareMoodHistory: data.shareMoodHistory, shareSymptoms: data.shareSymptoms, shareAssessment: data.shareAssessment, revokedAt: null, grantedAt: new Date(), shareJournalNotes: false } },
     { new: true, upsert: true, runValidators: true }
   );
   await audit('WELLBEING_SHARE_UPDATED', { user: req.user, req, targetId: permission._id, metadata: { appointmentId: String(appt._id), shareMoodHistory: data.shareMoodHistory, shareSymptoms: data.shareSymptoms, shareAssessment: data.shareAssessment } });
