@@ -109,7 +109,7 @@ export default function Pause() {
     <Link to="/appointments" className="inline-flex items-center gap-2 text-sm text-slate-500"><ArrowLeft size={16}/> My appointments</Link>
     <header className="rounded-3xl bg-gradient-to-br from-emerald-950 to-teal-800 p-6 text-white sm:p-8">
       <p className="text-sm font-semibold text-emerald-200">TULASI HEALTHCONNECT · PAUSE</p>
-      <h1 className="mt-2 text-3xl font-bold">Your mental well-being companion</h1>
+      <h1 className="mt-2 text-3xl font-bold">Pause &amp; Reflect</h1>
       <p className="mt-2 max-w-2xl text-emerald-100">A private space to check in with yourself, notice patterns and reflect at your own pace.</p>
     </header>
     <ErrorNotice>{error}</ErrorNotice><SuccessNotice>{success}</SuccessNotice>
