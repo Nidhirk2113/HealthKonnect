@@ -12,9 +12,21 @@ async function withServer(fn) {
 
 test('unauthenticated requests to protected routes are rejected', async () => {
   await withServer(async (base) => {
-    for (const path of ['/api/v1/appointments/mine', '/api/v1/admin/stats', '/api/v1/auth/me', '/api/v1/wellbeing/me', '/api/v1/wellbeing/check-ins', '/api/v1/wellbeing/assessments', '/api/v1/wellbeing/sharing', '/api/v1/consultations/507f1f77bcf86cd799439011/wellbeing']) {
-      const res = await fetch(base + path);
-      assert.equal(res.status, 401, path);
+    const protectedRequests = [
+      ['GET', '/api/v1/appointments/mine'],
+      ['GET', '/api/v1/admin/stats'],
+      ['GET', '/api/v1/auth/me'],
+      ['GET', '/api/v1/wellbeing/me'],
+      ['POST', '/api/v1/wellbeing/check-ins'],
+      ['POST', '/api/v1/wellbeing/assessments'],
+      ['PUT', '/api/v1/wellbeing/sharing'],
+      ['DELETE', '/api/v1/wellbeing/sharing/507f1f77bcf86cd799439011'],
+      ['GET', '/api/v1/consultations/507f1f77bcf86cd799439011/wellbeing'],
+    ];
+
+    for (const [method, path] of protectedRequests) {
+      const res = await fetch(base + path, { method });
+      assert.equal(res.status, 401, `${method} ${path}`);
     }
   });
 });
