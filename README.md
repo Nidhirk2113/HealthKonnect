@@ -18,6 +18,7 @@ Tulasi Healthcare is headquartered in Delhi–Gurgaon, with its technology, busi
 
 - [Product overview](#product-overview)
 - [Features](#features)
+- [Planned enhancements](#planned-enhancements)
 - [Technology stack](#technology-stack)
 - [Architecture](#architecture)
 - [Repository structure](#repository-structure)
@@ -116,6 +117,28 @@ Public visitors can also explore the clinic, services, doctors, articles and con
 
 ---
 
+## Planned enhancements
+
+The following ideas are proposed future upgrades and are **not represented as currently implemented features**. They are intended to improve patient experience, support clinical workflows and strengthen clinic operations.
+
+### Patient experience
+
+1. **Pre-consultation screening (PHQ-9 / GAD-7):** Allow patients to complete validated mental-health screening questionnaires before an appointment. Make responses available to the treating clinician for review, with appropriate consent, privacy safeguards and escalation procedures for concerning responses.
+2. **WhatsApp and SMS notifications:** Send appointment confirmations, reminders, cancellation updates and follow-up notifications through configured messaging providers.
+3. **Mood and journal tracker:** Let patients record daily mood check-ins and private journal entries, with an explicit choice about whether any information is shared with their clinician.
+
+### Doctor experience
+
+4. **Smart medication autocomplete:** Provide a searchable catalogue of commonly used medicines and configurable dosage instructions when preparing prescriptions. All medication details must be reviewed and confirmed by the prescribing clinician.
+
+### Clinic administration
+
+5. **Searchable patient history:** Provide authorised staff with a secure search experience for relevant patient appointments, consultation records and prescriptions, backed by strict role-based access controls and audit logging.
+
+These enhancements should be implemented only after reviewing the platform's security, privacy, consent, clinical-safety and operational requirements. Screening tools support clinical assessment; they do not provide a diagnosis or replace professional judgement.
+
+---
+ 
 ## Technology stack
 
 | Area | Technologies |
