@@ -137,6 +137,25 @@ The following ideas are proposed future upgrades and are **not represented as cu
 
 These enhancements should be implemented only after reviewing the platform's security, privacy, consent, clinical-safety and operational requirements. Screening tools support clinical assessment; they do not provide a diagnosis or replace professional judgement.
 
+
+### Connected Healthcare Ecosystem: HealthKonnect × AuVault
+
+A proposed future direction is to connect HealthKonnect with **[AuVault](https://github.com/Nidhirk2113/AuVault)**, a separate pharmacy inventory and dispensing application. The aim is to extend the patient and clinician journey into a pharmacy fulfilment workflow without merging the applications or their databases.
+
+Potential capabilities:
+
+1. **Prescription handoff to pharmacy:** Make a clinician-finalised prescription available to an authorised pharmacy through a secure, authenticated, versioned API. Only the minimum information needed for prescription verification and dispensing should be shared.
+2. **Medicine availability lookup:** Allow an authorised patient or clinical workflow to check whether prescribed medicines are available at the connected AuVault pharmacy, without exposing unnecessary internal inventory or supplier information.
+3. **Dispensing progress:** Display pharmacy statuses such as received, under review, partially dispensed, fully dispensed or unable to fulfil.
+4. **Reference-based record linking:** Associate a HealthKonnect prescription with an AuVault dispensing record using unique integration references. Keep patient identity and clinical records within HealthKonnect rather than duplicating full patient profiles in the pharmacy system.
+5. **Fulfilment insights:** Explore aggregated views of prescription fulfilment, medicine demand and availability trends for authorised clinic administrators.
+
+**Proposed architecture:** HealthKonnect and AuVault remain independent applications, each owning its own database, authentication and business rules. A versioned REST API integration would use service-to-service authentication, scoped access, request validation, idempotency, audit logging and secure transport. HealthKonnect remains the source of clinical prescriptions; AuVault remains the source of pharmacy stock and dispensing records.
+
+**Privacy, consent and clinical safeguards:** Obtain and record appropriate patient consent before sharing prescription information; enforce clinician and pharmacist permissions; verify prescription authenticity, status and validity; share only the minimum necessary data; and audit access and fulfilment events. Dispensing updates must not alter the clinician's original prescription. Any real-world integration requires appropriate clinical, privacy, security, legal and regulatory review.
+
+**Status:** This is a proposed future enhancement only. Prescription transfer, medicine availability lookup, cross-platform authentication and dispensing-status synchronisation have not yet been implemented.
+
 ---
  
 ## Technology stack
